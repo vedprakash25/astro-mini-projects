@@ -1,0 +1,99 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Card from "../components/Card.astro";
+import "../base.css";
+---
+
+<Layout title="Welcome to .">
+  <main class="">
+    <h1 class="text-4xl font-bold"><span class="text-gradient">Test</span></h1>
+
+    <form class="grid gap-4">
+      <input id="query" name="query" class="p-2 mt-3 w-full" />
+      <button id="btn" class="px-3 py-1 w-fit ml-auto">Submit</button>
+    </form>
+
+    <ul id="link-card-grid" role="list" class="link-card-grid mt-3"></ul>
+  </main>
+</Layout>
+
+<script>
+  import axios from "axios";
+  var inputs = document.getElementById("query") as HTMLInputElement;
+  var btn = document.getElementById("btn") as HTMLButtonElement;
+  var card_list = document.getElementById("link-card-grid") as HTMLUListElement;
+  btn.addEventListener("click", (e) => {
+    e.preventDefault();
+    console.log(btn, inputs.value);
+    if (inputs.value) {
+      axios
+        .get(
+          `https://api.edamam.com/search?q=${inputs.value}&app_id=e53f4710&app_key=1c1612f126ead10d287f5211319dea45`
+        )
+        .then(function (data) {
+          console.log("PERFECt.. all ok!");
+          console.log("number of apartements: " + data);
+          console.log(data);
+        });
+    }
+  });
+</script>
+
+<style>
+  main {
+    margin: auto;
+    padding: 1.5rem;
+    max-width: 60ch;
+  }
+  input {
+    border-radius: 8px;
+    border: 1px solid rgb(124, 58, 237);
+    color: rgb(124, 58, 237);
+  }
+  button {
+    border-radius: 8px;
+    border: 1px solid rgb(124, 58, 237);
+    color: rgb(124, 58, 237);
+  }
+  input:focus {
+    outline: 1px solid rgb(124, 58, 237);
+  }
+
+  h1 {
+    font-size: 5rem;
+    font-weight: 800;
+    margin: 0;
+  }
+  .text-gradient {
+    background-image: var(--accent-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-size: 400%;
+    background-position: 0%;
+  }
+  .instructions {
+    line-height: 1.6;
+    margin: 1rem 0;
+    border: 1px solid rgba(var(--accent), 25%);
+    background-color: white;
+    padding: 1rem;
+    border-radius: 0.4rem;
+  }
+  .instructions code {
+    font-size: 0.875em;
+    font-weight: bold;
+    background: rgba(var(--accent), 12%);
+    color: rgb(var(--accent));
+    border-radius: 4px;
+    padding: 0.3em 0.45em;
+  }
+  .instructions strong {
+    color: rgb(var(--accent));
+  }
+  .link-card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(24ch, 1fr));
+    gap: 1rem;
+    padding: 0;
+  }
+</style>
