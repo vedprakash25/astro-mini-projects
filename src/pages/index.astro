@@ -1,15 +1,24 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import Card from "../components/Card.astro";
+
 import "../base.css";
+import hits from "./static.json";
 ---
 
 <Layout title="Welcome to .">
   <main class="">
-    <h1 class="text-4xl font-bold"><span class="text-gradient">Test</span></h1>
+    <h1 class="text-4xl font-bold">
+      <span class="text-gradient">Search Recipe</span>
+    </h1>
 
     <form class="grid gap-4">
-      <input id="query" name="query" class="p-2 mt-3 w-full" />
+      <input
+        placeholder="What do you want to Cook?"
+        id="query"
+        name="query"
+        class="p-2 mt-3 w-full"
+      />
       <button id="btn" class="px-3 py-1 w-fit ml-auto">Submit</button>
     </form>
 
@@ -22,20 +31,76 @@ import "../base.css";
   var inputs = document.getElementById("query") as HTMLInputElement;
   var btn = document.getElementById("btn") as HTMLButtonElement;
   var card_list = document.getElementById("link-card-grid") as HTMLUListElement;
+
   btn.addEventListener("click", (e) => {
     e.preventDefault();
+
+    var dishName = "burger";
+    card_list.innerHTML = "";
     console.log(btn, inputs.value);
     if (inputs.value) {
+      var dishName = inputs.value;
       axios
         .get(
-          `https://api.edamam.com/search?q=${inputs.value}&app_id=e53f4710&app_key=1c1612f126ead10d287f5211319dea45`
+          `https://api.edamam.com/search?q=${dishName}&app_id=e53f4710&app_key=1c1612f126ead10d287f5211319dea45`
         )
-        .then(function (data) {
-          console.log("PERFECt.. all ok!");
-          console.log("number of apartements: " + data);
-          console.log(data);
+        .then(function (res) {
+          const data = res.data;
+          const recipes = data.hits;
+
+          recipes.forEach((element) => {
+            const { recipe } = element;
+            console.log(recipe);
+
+            const li = document.createElement("li");
+
+            const card = `
+                      <img class="h-48 w-full border-2" src=${recipe.image} alt="mockup"/>
+                      <h1 class="text-2xl capitalize">
+                      ${recipe.label}
+                      </h1>
+                      <div class="flex justify-between">
+                      <h4 class="capitalize">${recipe.cuisineType}</h4>  
+                      <h5 class="capitalize">${recipe.dishType[0]}</h5>
+                      </div>
+                    `;
+            li.innerHTML = card;
+            card_list.append(li);
+          });
         });
     }
+  });
+
+  window.addEventListener("load", () => {
+    var dishName = "burger";
+
+    axios
+      .get(
+        `https://api.edamam.com/search?q=${dishName}&app_id=e53f4710&app_key=1c1612f126ead10d287f5211319dea45`
+      )
+      .then(function (res) {
+        const data = res.data;
+        const recipes = data.hits;
+        console.log(recipes);
+        recipes.forEach((element) => {
+          const { recipe } = element;
+          console.log(recipe);
+
+          const li = document.createElement("li");
+          const card = `
+                <img class="h-48 w-full border-2" src=${recipe.image} alt="mockup"/>
+                <h1 class="text-2xl capitalize">
+                ${recipe.label}
+                </h1>
+                <div class="flex justify-between">
+                <h4 class="capitalize">${recipe.cuisineType}</h4>  
+                <h5 class="capitalize">${recipe.dishType[0]}</h5>
+                </div>
+              `;
+          li.innerHTML = card;
+          card_list.append(li);
+        });
+      });
   });
 </script>
 
