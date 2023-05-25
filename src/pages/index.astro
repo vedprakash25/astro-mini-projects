@@ -3,6 +3,8 @@ import Layout from "../layouts/Layout.astro";
 import Card from "../components/Card.astro";
 
 import "../base.css";
+const { id } = Astro.params;
+console.log(id);
 ---
 
 <Layout title="Welcome to Kitchen">
@@ -22,14 +24,25 @@ import "../base.css";
     </form>
 
     <ul id="link-card-grid" role="list" class="link-card-grid mt-3"></ul>
+
+    <div
+      id="popup-wrapper"
+      class="h-screen hidden border-4 border-red-500 bg-gray-700 place-content-center bg-opacity-50 w-screen fixed inset-0"
+    >
+    </div>
   </main>
 </Layout>
 
 <script>
   import axios from "axios";
+
   var inputs = document.getElementById("query") as HTMLInputElement;
   var btn = document.getElementById("btn") as HTMLButtonElement;
   var card_list = document.getElementById("link-card-grid") as HTMLUListElement;
+  var popup_Wrapper = document.getElementById(
+    "popup-wrapper"
+  ) as HTMLDivElement;
+  var ing_list = document.getElementById("ingredient-list") as HTMLUListElement;
 
   btn.addEventListener("click", (e) => {
     e.preventDefault();
@@ -76,7 +89,7 @@ import "../base.css";
 
   window.addEventListener("load", () => {
     var dishName = "burger";
-
+    const currIndex = 0;
     axios
       .get(
         `https://api.edamam.com/search?q=${dishName}&app_id=e53f4710&app_key=1c1612f126ead10d287f5211319dea45`
@@ -85,13 +98,12 @@ import "../base.css";
         const data = res.data;
         const recipes = data.hits;
         console.log(recipes);
-        recipes.forEach((element) => {
+
+        recipes.forEach((element, index) => {
           const { recipe } = element;
-          console.log(recipe);
 
           const li = document.createElement("li");
-          const card = `
-                     <a href="/" class="cursor-pointer">
+          const card = `<div class="cursor-pointer recipe-cards">
                       <img
                         class="h-48 w-full border-2 bg-slate-400"
                         src="${recipe.image}"
@@ -102,10 +114,41 @@ import "../base.css";
                         <h4 class="capitalize">${recipe.cuisineType}</h4>
                         <h5 class="capitalize">${recipe.dishType[0]}</h5>
                       </div>
-                    </a>          
-              `;
+                    </div>`;
           li.innerHTML = card;
           card_list.append(li);
+
+          const recipeCards = document.querySelectorAll(".recipe-cards");
+
+          recipeCards.forEach((item, index) => {
+            document.addEventListener("click", (item) => {
+              const popup = `
+                        <div class="bg-white rounded-md p-4">
+                          <div class="ingredients">
+                            <h3 class="text-xl">Ingredients</h3>
+                            <ul id="ingredient-list">
+                              
+                            </ul>
+                          </div>
+                        </div>`;
+
+              popup_Wrapper.style.display = "grid";
+              popup_Wrapper.innerHTML = popup;
+
+              const ing_list = document.querySelector(
+                "#ingredient-list"
+              ) as HTMLUListElement;
+              
+              const ing = recipe.ingredients;
+              
+              ing.map((item, index) => {
+                const lis = document.createElement("li");
+                ing_list.appendChild(lis);
+                lis.innerHTML= `<li>${item.text}</li>`;
+              });
+              console.log(ing, "ingredient");
+            });
+          });
         });
       });
   });
