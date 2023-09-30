@@ -27,14 +27,16 @@ console.log(id);
 
     <div
       id="popup-wrapper"
-      class="h-screen hidden border-4 border-red-500 bg-gray-700 place-content-center bg-opacity-50 w-screen fixed inset-0"
+      class="h-screen p-5 hidden justify-center bg-black items-center bg-opacity-50 w-full fixed inset-0"
     >
+      <div class="ingredients"></div>
     </div>
   </main>
 </Layout>
 
 <script>
   import axios from "axios";
+  import keydown from "keydown";
 
   var inputs = document.getElementById("query") as HTMLInputElement;
   var btn = document.getElementById("btn") as HTMLButtonElement;
@@ -105,7 +107,7 @@ console.log(id);
           const li = document.createElement("li");
           const card = `<div class="cursor-pointer recipe-cards">
                       <img
-                        class="h-48 w-full border-2 bg-slate-400"
+                        class="h-48 object-cover w-full border-2 bg-slate-400"
                         src="${recipe.image}"
                         alt="mockup"
                       />
@@ -121,32 +123,46 @@ console.log(id);
           const recipeCards = document.querySelectorAll(".recipe-cards");
 
           recipeCards.forEach((item, index) => {
-            document.addEventListener("click", (item) => {
-              const popup = `
-                        <div class="bg-white rounded-md p-4">
-                          <div class="ingredients">
-                            <h3 class="text-xl">Ingredients</h3>
-                            <ul id="ingredient-list">
-                              
-                            </ul>
-                          </div>
-                        </div>`;
+            item.addEventListener("click", (it) => {
+              console.log(item);
+              const popup = `             
+                        <div class="bg-white relative p-10 w-full max-w-screen-sm">
+                          <button id="close-buton" class=" absolute -top-5 -right-5 border-red-900 h-10 w-10 rounded-full bg-black text-white font-bold">X</button>
+                          <h3 class="text-xl ">Dish Name : ${recipes[index].recipe.label}</h3>
+                          <h3 class="text-xl ">Ingredients :</h3>
+                            <div class="bg-white rounded-md">
+                              <div class="ingredients">
+                                <ul id="ingredient-list">
+                                  
+                                </ul>
+                              </div>
+                            </div>
+                        </div>
+                       `;
 
               popup_Wrapper.style.display = "grid";
               popup_Wrapper.innerHTML = popup;
 
+              var closeBtn = document.getElementById(
+                "close-buton"
+              ) as HTMLButtonElement;
+
+              closeBtn.addEventListener("click", () => {
+                popup_Wrapper.innerHTML = "";
+                popup_Wrapper.style.display = "none";
+              });
+
               const ing_list = document.querySelector(
                 "#ingredient-list"
               ) as HTMLUListElement;
-              
+
               const ing = recipe.ingredients;
-              
+
               ing.map((item, index) => {
                 const lis = document.createElement("li");
                 ing_list.appendChild(lis);
-                lis.innerHTML= `<li>${item.text}</li>`;
+                lis.innerHTML = `<li>${item.text}</li>`;
               });
-              console.log(ing, "ingredient");
             });
           });
         });
